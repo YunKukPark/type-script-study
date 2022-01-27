@@ -1,4 +1,6 @@
+import { fetchCoinInfo, fetchCoinTickers } from 'api';
 import React, { useEffect, useState } from 'react';
+import { useQuery } from 'react-query';
 import { Link, Route, Routes, useLocation, useMatch, useParams } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import Chart from './Chart';
@@ -69,24 +71,17 @@ interface PriceData {
 }
 
 function Coin() {
-  const [loading, setLoading] = useState(true);
-  const { coinId } = useParams();
   const { state } = useLocation() as ICoin;
-  const [info, setInfo] = useState<InfoData>();
-  const [priceInfo, setPriceInfo] = useState<PriceData>();
+  const { coinId } = useParams();
   const priceMatch = useMatch('/:coinId/price');
   const chartMatch = useMatch('/:coinId/chart');
 
-  useEffect(() => {
-    (async () => {
-      const infoData = await (await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}`)).json();
-      const priceData = await (await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)).json();
-      setInfo(infoData);
-      setPriceInfo(priceData);
-      setLoading(false);
-    })();
-  }, []);
+  const { isLoading: infoLoading, data: info } = useQuery<InfoData>(['info', coinId]!, () => fetchCoinInfo(coinId!));
+  const { isLoading: tickersLoading, data: tickers } = useQuery<PriceData>(['tickers', coinId!], () =>
+    fetchCoinTickers(coinId!)
+  );
 
+  const loading = infoLoading || tickersLoading;
   return (
     <Container>
       <Header>
@@ -114,11 +109,11 @@ function Coin() {
           <Overview>
             <OverviewItem>
               <span>Total Supply:</span>
-              <span>{priceInfo?.total_supply}</span>
+              <span>{tickers?.total_supply}</span>
             </OverviewItem>
             <OverviewItem>
               <span>Max Supply:</span>
-              <span>{priceInfo?.max_supply}</span>
+              <span>{tickers?.max_supply}</span>
             </OverviewItem>
           </Overview>
           <Tabs>
