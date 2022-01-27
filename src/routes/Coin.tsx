@@ -1,5 +1,4 @@
 import { fetchCoinInfo, fetchCoinTickers } from 'api';
-import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { Link, Route, Routes, useLocation, useMatch, useParams } from 'react-router-dom';
 import styled from 'styled-components/macro';
