@@ -75,8 +75,8 @@ function Coin() {
   const priceMatch = useMatch('/:coinId/price');
   const chartMatch = useMatch('/:coinId/chart');
 
-  const { isLoading: infoLoading, data: info } = useQuery<InfoData>(['info', coinId]!, () => fetchCoinInfo(coinId!));
-  const { isLoading: tickersLoading, data: tickers } = useQuery<PriceData>(['tickers', coinId!], () =>
+  const { isLoading: infoLoading, data: info } = useQuery<InfoData>(['info', coinId], () => fetchCoinInfo(coinId!));
+  const { isLoading: tickersLoading, data: tickers } = useQuery<PriceData>(['tickers', coinId], () =>
     fetchCoinTickers(coinId!)
   );
 
@@ -125,7 +125,7 @@ function Coin() {
           </Tabs>
 
           <Routes>
-            <Route path="chart" element={<Chart />} />
+            <Route path="chart" element={<Chart coinId={coinId!} />} />
             <Route path="price" element={<Price />} />
           </Routes>
         </>
